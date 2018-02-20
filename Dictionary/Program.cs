@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Dictionary
 {
@@ -11,11 +12,18 @@ namespace Dictionary
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Downloading dictionary...");
             var dictionary = DownloadDictionary(@"https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").ToList();
 
-            WriteOutAverageSearchTime<LinearSearch>(dictionary, 10000);
-            WriteOutAverageSearchTime<BinarySearch>(dictionary, 10);
+            Console.WriteLine("Searching...");
 
+            var linearTask = Task.Run(() => WriteOutAverageSearchTime<LinearSearch>(dictionary, 10000));
+            var binaryTask = Task.Run(() => WriteOutAverageSearchTime<BinarySearch>(dictionary, 10000));
+
+            linearTask.Wait();
+            binaryTask.Wait();
+
+            Console.WriteLine("\nAll done!");
             Console.ReadLine();
         }
 
