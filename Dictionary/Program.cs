@@ -27,7 +27,7 @@ namespace Dictionary
             return dictionary;
         }
 
-        private static void WriteOutAverageSearchTime<TSearch>(IEnumerable<string> dictionary, int noOfRuns) where TSearch: IDictionarySearch, new()
+        private static void WriteOutAverageSearchTime<TSearch>(IEnumerable<string> dictionary, int noOfRuns) where TSearch : IDictionarySearch, new()
         {
             var search = new TSearch();
             var dict = dictionary.ToList();
@@ -37,20 +37,28 @@ namespace Dictionary
             for (var i = 0; i < noOfRuns; i++)
             {
                 var randomWord = random.Next(0, dict.Count - 1);
-                runTimes.Add(TimeWordSearch(search, dict[randomWord], dict));
+                if (!TimeWordSearch(search, dict[randomWord], dict, out var runTime))
+                {
+                    Console.WriteLine(
+                        $"Error: {search.GetType().Name} did not find {dict[randomWord]}; test terminated.");
+                    return;
+                }
+                runTimes.Add(runTime);
             }
 
             Console.WriteLine(
                 $"{search.GetType().Name} average speed {runTimes.Average(l => l)}ms over {noOfRuns} runs.");
         }
 
-        private static long TimeWordSearch(IDictionarySearch search, string wordToFind, IEnumerable<string> dictionary)
+        private static bool TimeWordSearch(IDictionarySearch search, string wordToFind, IEnumerable<string> dictionary, out long runTime)
         {
             var timer = new Stopwatch();
             timer.Start();
-            search.FindWordInDictionary(wordToFind, dictionary);
+            var wordExists = search.FindWordInDictionary(wordToFind, dictionary);
             timer.Stop();
-            return timer.ElapsedMilliseconds;
+            runTime = timer.ElapsedMilliseconds;
+
+            return wordExists;
         }
     }
 }
