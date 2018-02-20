@@ -12,15 +12,10 @@ namespace Dictionary
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Downloading dictionary...");
-            var dictionary = new DictionaryCreator()
-                .DownloadDictionary(@"https://raw.githubusercontent.com/tomprogers/english-words/tpr/24-sort-words/words.txt")
-                .ToList();
-
             Console.WriteLine("Searching...");
 
-            var linearTask = Task.Run(() => WriteOutAverageSearchTime<LinearSearch>(dictionary, 10000));
-            var binaryTask = Task.Run(() => WriteOutAverageSearchTime<BinarySearch>(dictionary, 10000));
+            var linearTask = Task.Run(() => WriteOutAverageSearchTime<LinearSearch>(10000));
+            var binaryTask = Task.Run(() => WriteOutAverageSearchTime<BinarySearch>(10000));
 
             linearTask.Wait();
             binaryTask.Wait();
@@ -29,17 +24,20 @@ namespace Dictionary
             Console.ReadLine();
         }
 
-        private static void WriteOutAverageSearchTime<TSearch>(IEnumerable<string> dictionary, int noOfRuns) where TSearch : IDictionarySearch, new()
+        private static void WriteOutAverageSearchTime<TSearch>(int noOfRuns) where TSearch : IDictionarySearch, new()
         {
+            var dictionary = new DictionaryCreator()
+                .DownloadDictionary(@"https://raw.githubusercontent.com/tomprogers/english-words/tpr/24-sort-words/words.txt")
+                .ToList();
+
             var search = new TSearch();
-            var dict = dictionary.ToList();
             var random = new Random();
             var runTimes = new List<long>();
 
             for (var i = 0; i < noOfRuns; i++)
             {
-                var randomWord = dict[random.Next(0, dict.Count - 1)];
-                if (!TimeWordSearch(search, randomWord, dict, out var runTime))
+                var randomWord = dictionary[random.Next(0, dictionary.Count - 1)];
+                if (!TimeWordSearch(search, randomWord, dictionary, out var runTime))
                 {
                     Console.WriteLine(
                         $"Error: {search.GetType().Name} did not find {randomWord}; test terminated.");
@@ -49,7 +47,10 @@ namespace Dictionary
             }
 
             Console.WriteLine(
-                $"{search.GetType().Name} average speed {runTimes.Average(l => l)}ms over {noOfRuns} runs.");
+                $"{search.GetType().Name} over {noOfRuns} runs - " +
+                $"mean: {runTimes.Average()}; " +
+                $"range: {runTimes.Min()}-{runTimes.Max()}; "
+                );
         }
 
         private static bool TimeWordSearch(IDictionarySearch search, string wordToFind, IEnumerable<string> dictionary, out long runTime)
