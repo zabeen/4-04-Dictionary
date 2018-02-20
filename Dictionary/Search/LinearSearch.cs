@@ -6,7 +6,13 @@ namespace Dictionary.Search
     {
         public bool FindWordInDictionary(string wordToFind, IEnumerable<string> dictionary)
         {
-            return true;
+            foreach (var word in dictionary)
+            {
+                if (word.Equals(wordToFind))
+                    return true;
+            }
+
+            return false;
         }
     }
 }
