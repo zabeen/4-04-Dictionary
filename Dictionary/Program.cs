@@ -13,8 +13,8 @@ namespace Dictionary
         {
             var dictionary = DownloadDictionary(@"https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").ToList();
 
-            WriteOutAverageSearchTime<LinearSearch>("bob", dictionary, 10000);
-            WriteOutAverageSearchTime<BinarySearch>("bob", dictionary, 10000);
+            WriteOutAverageSearchTime<LinearSearch>(dictionary, 10000);
+            WriteOutAverageSearchTime<BinarySearch>(dictionary, 10);
 
             Console.ReadLine();
         }
@@ -27,27 +27,30 @@ namespace Dictionary
             return dictionary;
         }
 
-        private static void WriteOutAverageSearchTime<TSearch>(string wordToFind, IEnumerable<string> dictionary, int noOfRuns) 
-            where TSearch : IDictionarySearch, new()
+        private static void WriteOutAverageSearchTime<TSearch>(IEnumerable<string> dictionary, int noOfRuns) where TSearch: IDictionarySearch, new()
         {
             var search = new TSearch();
             var dict = dictionary.ToList();
-            var wordExists = false;
+            var random = new Random();
             var runTimes = new List<long>();
-            
+
             for (var i = 0; i < noOfRuns; i++)
             {
-                var timer = new Stopwatch();
-                timer.Start();
-                wordExists = search.FindWordInDictionary(wordToFind, dict);
-                timer.Stop();
-                runTimes.Add(timer.ElapsedMilliseconds);
+                var randomWord = random.Next(0, dict.Count - 1);
+                runTimes.Add(TimeWordSearch(search, dict[randomWord], dict));
             }
 
-            var result = wordExists ? "found" : "did not find";
-
             Console.WriteLine(
-                $"{search.GetType().Name} {result} \"{wordToFind}\" {noOfRuns} times; average speed: {runTimes.Average(l => l)}ms.");
+                $"{search.GetType().Name} average speed {runTimes.Average(l => l)}ms over {noOfRuns} runs.");
+        }
+
+        private static long TimeWordSearch(IDictionarySearch search, string wordToFind, IEnumerable<string> dictionary)
+        {
+            var timer = new Stopwatch();
+            timer.Start();
+            search.FindWordInDictionary(wordToFind, dictionary);
+            timer.Stop();
+            return timer.ElapsedMilliseconds;
         }
     }
 }
