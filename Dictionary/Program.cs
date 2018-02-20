@@ -1,9 +1,9 @@
-﻿using Dictionary.Search;
+﻿using Dictionary.Dictionary;
+using Dictionary.Search;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Dictionary
@@ -13,7 +13,9 @@ namespace Dictionary
         static void Main(string[] args)
         {
             Console.WriteLine("Downloading dictionary...");
-            var dictionary = DownloadDictionary(@"https://raw.githubusercontent.com/dwyl/english-words/master/words.txt").ToList();
+            var dictionary = new DictionaryCreator()
+                .DownloadDictionary(@"https://raw.githubusercontent.com/tomprogers/english-words/tpr/24-sort-words/words.txt")
+                .ToList();
 
             Console.WriteLine("Searching...");
 
@@ -25,14 +27,6 @@ namespace Dictionary
 
             Console.WriteLine("\nAll done!");
             Console.ReadLine();
-        }
-
-        private static IEnumerable<string> DownloadDictionary(string url)
-        {
-            var dictionary = new WebClient().DownloadString(url).Split('\n').ToList();
-            dictionary.RemoveAll(word => word.Equals(string.Empty));
-            dictionary.Sort();
-            return dictionary;
         }
 
         private static void WriteOutAverageSearchTime<TSearch>(IEnumerable<string> dictionary, int noOfRuns) where TSearch : IDictionarySearch, new()
