@@ -48,8 +48,8 @@ namespace Dictionary
 
             Console.WriteLine(
                 $"{search.GetType().Name} over {noOfRuns} runs - " +
-                $"mean: {runTimes.Average()}; " +
-                $"range: {runTimes.Min()}-{runTimes.Max()}; "
+                $"mean: {runTimes.Average()}ms; " +
+                $"range: {runTimes.Min()}-{runTimes.Max()}ms"
                 );
         }
 
