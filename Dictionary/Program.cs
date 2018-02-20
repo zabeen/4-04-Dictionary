@@ -32,21 +32,22 @@ namespace Dictionary
         {
             var search = new TSearch();
             var dict = dictionary.ToList();
+            var wordExists = false;
             var runTimes = new List<long>();
             
             for (var i = 0; i < noOfRuns; i++)
             {
                 var timer = new Stopwatch();
                 timer.Start();
-
-                if (!search.FindWordInDictionary(wordToFind, dict))
-                    break;
-
+                wordExists = search.FindWordInDictionary(wordToFind, dict);
                 timer.Stop();
                 runTimes.Add(timer.ElapsedMilliseconds);
             }
-            
-            Console.WriteLine($"{search.GetType().Name} - x{noOfRuns} runs - average run time: {runTimes.Average(l => l)}ms");
+
+            var result = wordExists ? "found" : "did not find";
+
+            Console.WriteLine(
+                $"{search.GetType().Name} {result} \"{wordToFind}\" {noOfRuns} times; average speed: {runTimes.Average(l => l)}ms.");
         }
     }
 }
