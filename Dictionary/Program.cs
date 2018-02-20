@@ -44,11 +44,11 @@ namespace Dictionary
 
             for (var i = 0; i < noOfRuns; i++)
             {
-                var randomWord = random.Next(0, dict.Count - 1);
-                if (!TimeWordSearch(search, dict[randomWord], dict, out var runTime))
+                var randomWord = dict[random.Next(0, dict.Count - 1)];
+                if (!TimeWordSearch(search, randomWord, dict, out var runTime))
                 {
                     Console.WriteLine(
-                        $"Error: {search.GetType().Name} did not find {dict[randomWord]}; test terminated.");
+                        $"Error: {search.GetType().Name} did not find {randomWord}; test terminated.");
                     return;
                 }
                 runTimes.Add(runTime);
