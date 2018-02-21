@@ -14,11 +14,8 @@ namespace Dictionary
         {
             Console.WriteLine("Searching...");
 
-            var linearTask = Task.Run(() => WriteOutAverageSearchTime<LinearSearch>(10000));
-            var binaryTask = Task.Run(() => WriteOutAverageSearchTime<BinarySearch>(10000));
-
-            linearTask.Wait();
-            binaryTask.Wait();
+            WriteOutAverageSearchTime<LinearSearch>(10000);
+            WriteOutAverageSearchTime<BinarySearch>(10000);
 
             Console.WriteLine("\nAll done!");
             Console.ReadLine();
